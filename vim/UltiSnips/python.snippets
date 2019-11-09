@@ -1,0 +1,101 @@
+snippet bp "Breakpoint"
+breakpoint()
+endsnippet
+
+snippet pdb "Debug"
+import pdb; pdb.set_trace(); # TODO: Delete
+endsnippet
+
+snippet ipdb "Debug"
+from pprint import pprint; import ipdb; ipdb.set_trace(); # TODO: Delete
+endsnippet
+
+snippet pdbp "Debug remove pilot"
+import remote_pdb; remote_pdb.set_trace('0.0.0.0', ${1:7444}) # TODO: Delete
+endsnippet
+
+snippet pdbs "Debug remote scout"
+import remote_pdb; remote_pdb.set_trace('0.0.0.0', ${1:5444}) # TODO: Delete
+endsnippet
+
+snippet pdbsv "Debug remote svs"
+import remote_pdb; remote_pdb.set_trace('0.0.0.0', ${1:5454}) # TODO: Delete
+endsnippet
+
+snippet pdbt "Debug test"
+import pytest; pytest.set_trace() # TODO: Delete
+endsnippet
+
+snippet tdf "TODO: Fix"
+# TODO: Fix
+endsnippet
+
+snippet tdd "TODO: Delete"
+# TODO: Delete
+endsnippet
+
+snippet qlit "Query literal"
+.statement.compile()
+endsnippet
+
+# from ptpython.repl import embed; embed(globals(), locals())
+snippet pdbi "Debug ipython"
+import ipdb; ipdb.set_trace(context=10)
+endsnippet
+
+snippet fi "from ... import ..."
+from $1 import $2
+endsnippet
+
+snippet p "print ('...': ...)"
+print '${2:$1: {}}'.format(${1}); # TODO: Delete
+endsnippet
+
+snippet time "Wrap something with a timing function"
+from datetime import datetime # TODO: Delete
+start = datetime.now()
+$1
+end = datetime.now()
+total = end - start
+print "\n\nTIME: {}\n\n".format(total.total_seconds)
+endsnippet
+
+snippet log "Use the Flask logger"
+from ${1:pilot}.run import app # TODO: Delete
+app.logger.info('${3:$2}: %s', $2) # TODO: Delete
+endsnippet
+
+# Test related
+snippet nt "New test"
+def test_$1(self):
+    self.assertTrue(False)
+endsnippet
+
+snippet s.at "Assert True"
+self.assertTrue($1)
+endsnippet
+
+snippet s.ae "Assert equal"
+self.assertEqual($1, $2)
+endsnippet
+
+# Lint related
+snippet pld "Pylint disable"
+# pylint: disable=$1
+endsnippet
+
+snippet psq "Print sql query"
+from sqlalchemy.dialects import postgresql
+ppq = ${1:query}.statement.compile(dialect=postgresql.dialect(), compile_kwargs={'literal_binds': True})
+endsnippet
+
+snippet spc "SQL performance check"
+from nook.utils.sql_performance_check import set_listeners
+logger = set_listeners()
+logger.disabled = False
+logger.disabled = True
+endsnippet
+
+snippet rt "Reveal type"
+reveal_type($1)
+endsnippet

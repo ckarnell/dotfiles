@@ -1,0 +1,10 @@
+let g:netrw_dirhistmax  =10
+let g:netrw_dirhist_cnt =8
+let g:netrw_dirhist_1='/Users/cohenkarnell/spark/scout/client/patient-experience/queue'
+let g:netrw_dirhist_2='/Users/cohenkarnell/spark'
+let g:netrw_dirhist_3='/Users/cohenkarnell'
+let g:netrw_dirhist_4='/Users/cohenkarnell/spark/scout/client/patient-experience/queue'
+let g:netrw_dirhist_5='/Users/cohenkarnell/spark/scout/client/patient-experience'
+let g:netrw_dirhist_6='/Users/cohenkarnell/spark/scout/client/patient-experience/queue'
+let g:netrw_dirhist_7='/Users/cohenkarnell/spark/dispatch/client/admin'
+let g:netrw_dirhist_8='/Users/cohenkarnell/spark/scout/client/patient-experience/queue'
