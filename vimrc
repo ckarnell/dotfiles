@@ -134,6 +134,8 @@ call plug#begin('~/.vim/plugged')
     " Plug 'jaxbot/semantic-highlight.vim' " Semantic highlighting
     Plug 'pangloss/vim-javascript' " Javascript indentation and syntax support
     Plug 'mgedmin/python-imports.vim' " Auto imports for Python
+    Plug 'deoplete-plugins/deoplete-jedi' " Autocomplete for Python using deoplete
+    Plug 'davidhalter/jedi-vim' " Use this for smarter goto definition in Python
   endif
 call plug#end()
 
@@ -274,6 +276,7 @@ augroup omni_group
   autocmd FileType html,markdown setlocal omnifunc=htmlcomplete#CompleteTags
   autocmd FileType javascript setlocal omnifunc=javascriptcomplete#CompleteJS
   " autocmd FileType python setlocal omnifunc=pythoncomplete#Complete
+  " autocmd FileType typescript setlocal omnifunc=tsuquyomi#tsClient#tsCompletions
 augroup END
 
 " Set the filetypes to skip over adding to the history.
@@ -331,6 +334,17 @@ let g:ctrlp_map = '<c-p>'
 let g:ctrlp_cmd = 'CtrlP'
 let g:ctrlp_extensions = ['line', 'dir', 'tag']
 let g:ctrlp_custom_ignore = 'node_modules\|DS_Store\|git'
+
+" Jedi settings
+let g:jedi#completions_enabled = 0 " Use deoplete for this instead
+" Jedi commands
+let g:jedi#goto_command = "<leader>g"
+let g:jedi#goto_assignments_command = ""
+let g:jedi#goto_definitions_command = ""
+let g:jedi#documentation_command = ""
+let g:jedi#usages_command = ""
+let g:jedi#completions_command = ""
+let g:jedi#rename_command = ""
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Plugin_option_toggling
