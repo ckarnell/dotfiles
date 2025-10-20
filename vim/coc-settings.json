@@ -1,0 +1,6 @@
+{
+  "suggest.noselect": true,
+  "omnisharp.monoPath": "/opt/homebrew/bin/mono",
+  "omnisharp.useModernNet": true,
+  "omnisharp.useGlobalMono": "never"
+}

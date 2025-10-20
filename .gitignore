@@ -1,0 +1,56 @@
+# =========================
+# General Vim ignores
+# =========================
+# Swap, backup, and undo files
+*.swp
+*.swo
+*.swm
+*.un~
+*.tmp
+*~
+
+# Session and view files
+Session.vim
+Sessionx.vim
+*.session
+*.view
+
+# Persistent undo / netrw history / temp
+[._]*.s[a-v][a-z]
+[._]*.sw[a-p]
+.netrwhist
+tags
+*.log
+
+# =========================
+# Vim plugin managers
+# =========================
+# Vundle / Pathogen / Plug / Pack dirs
+plugged/
+bundle/
+pack/*/start/*
+pack/*/opt/*
+
+# =========================
+# CoC (Conquer of Completion)
+# =========================
+# These are auto-generated; keep only `coc-settings.json` if you edit it manually
+.coc/
+coc-settings.json.lock
+coc-extension-data/
+
+# =========================
+# Misc tools and caches
+# =========================
+__pycache__/
+*.pyc
+.DS_Store
+Thumbs.db
+
+# =========================
+# Optional local overrides
+# =========================
+# Sometimes users create local vimrcs for machine-specific config
+.local.vimrc
+vimrc.local
+

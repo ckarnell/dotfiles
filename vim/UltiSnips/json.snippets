@@ -1,0 +1,163 @@
+snippet examplesnippet
+<a href="$1"${2: class="${3:link}"}>
+    $0
+</a>
+endsnippet
+
+snippet nf "Add new form"
+{
+	"forms": [
+		{
+			"title": "$1",
+			"label": "$1",
+			"name": "$1",
+			"formSections": [
+        {
+          "title": "$2",
+          "formFields": [
+            {
+              "name": "$3",
+              "question": "$3",
+              "type": ${4:"TEXT"}
+            $5}
+          ]
+        $6}
+      ]
+		$7}
+	]
+}
+endsnippet
+
+snippet f "Add form"
+},
+{
+	"title": "$1",
+	"label": "$1",
+	"name": "$1",
+	"formSections": [
+		{
+      "title": "$2",
+			"formFields": [
+				{
+					"name": "$3",
+					"question": "$3",
+					"type": ${4:"TEXT"}
+				$5}
+			]
+		$6}
+	]
+
+endsnippet
+
+snippet fs "Add form section"
+},
+{
+  "title": "$1",
+	"formFields": [
+		{
+			"name": "$2",
+			"question": "$2",
+			"type": ${3:"TEXT"}
+		$4}
+	]
+
+endsnippet
+
+snippet ff "Add form field"
+},
+{
+	"name": "$1",
+	"question": "$1",
+	"type": ${2:"TEXT"}
+
+endsnippet
+
+snippet o "Add option choice"
+},
+{
+	"label": "$1",
+	"value": "$1"
+
+endsnippet
+
+snippet dd "DROPDOWN"
+"DROPDOWN",
+"optionChoices": [
+	{
+		"label": "$1",
+		"value": "$1"
+	},
+	{
+		"label": "$2",
+		"value": "$2"
+	$3}
+]
+endsnippet
+
+snippet m "MULTI_SELECT"
+"MULTI_SELECT",
+"optionChoices": [
+	{
+		"label": "$1",
+		"value": "$1"
+	},
+	{
+		"label": "$2",
+		"value": "$2"
+	$3}
+]
+endsnippet
+
+snippet r "RADIO"
+"RADIO",
+"optionChoices": [
+	{
+		"label": "$1",
+		"value": "$1"
+	},
+	{
+		"label": "$2",
+		"value": "$2"
+	$3}
+]
+endsnippet
+
+snippet b "BLOOD_PRESSURE"
+"BLOOD_PRESSURE"
+endsnippet
+
+snippet d "DATE"
+"DATE"
+endsnippet
+
+snippet dt "DATETIME"
+"DATETIME"
+endsnippet
+
+snippet db "DOB"
+"DOB"
+endsnippet
+
+snippet h "HELP_TEXT"
+"HELP_TEXT"
+endsnippet
+
+snippet n "NUMBER"
+"NUMBER"
+endsnippet
+
+snippet t "TEXT"
+"TEXT"
+endsnippet
+
+snippet ta "TEXT_AREA"
+"TEXT_AREA"
+endsnippet
+
+snippet tf "TIME_FIELD"
+"TIME_FIELD"
+endsnippet
+
+snippet y "YES_NO"
+"YES_NO"
+endsnippet
