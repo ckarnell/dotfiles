@@ -159,7 +159,7 @@
     "BTTNotchBarNotchMenubarModeHideRightScrollable" : true,
     "BSTSnapAreaDefaultPictoDistanceFromLeft" : 0.10000000149011612
   },
-  "BTTPresetUUID" : "EB555FF3-51C9-4DB5-A5A5-C338BE4AD929",
+  "BTTPresetUUID" : "CBB65CEF-5994-4148-BB73-2E236A2AE51A",
   "BTTPresetContent" : [
     {
       "BTTAppBundleIdentifier" : "BT.L",
@@ -306,7 +306,7 @@
       "BTTTriggers" : [
         {
           "BTTActionCategory" : 0,
-          "BTTLastUpdatedAt" : 1762729277.119947,
+          "BTTLastUpdatedAt" : 1762736717.224098,
           "BTTTriggerType" : 0,
           "BTTTriggerClass" : "BTTTriggerTypeKeyboardShortcut",
           "BTTUUID" : "1C73506E-319B-4958-936D-2027509EB2D8",
@@ -326,7 +326,7 @@
         },
         {
           "BTTActionCategory" : 0,
-          "BTTLastUpdatedAt" : 1762730432.4773231,
+          "BTTLastUpdatedAt" : 1762736717.224118,
           "BTTTriggerType" : 0,
           "BTTTriggerClass" : "BTTTriggerTypeKeyboardShortcut",
           "BTTUUID" : "A42070A6-FCD9-487E-8189-68E580CD250C",
@@ -345,7 +345,7 @@
         },
         {
           "BTTActionCategory" : 0,
-          "BTTLastUpdatedAt" : 1762730365.6317921,
+          "BTTLastUpdatedAt" : 1762736717.224134,
           "BTTTriggerType" : 0,
           "BTTTriggerClass" : "BTTTriggerTypeKeyboardShortcut",
           "BTTUUID" : "1610F123-C6EB-495A-A1CD-6611C4AE7D63",
@@ -384,7 +384,7 @@
         },
         {
           "BTTActionCategory" : 0,
-          "BTTLastUpdatedAt" : 1762730432.477283,
+          "BTTLastUpdatedAt" : 1762736717.2241449,
           "BTTTriggerType" : 0,
           "BTTTriggerClass" : "BTTTriggerTypeKeyboardShortcut",
           "BTTUUID" : "1B4DBB17-674B-49AF-9B4E-6A64D576D7E5",
@@ -403,7 +403,7 @@
         },
         {
           "BTTActionCategory" : 0,
-          "BTTLastUpdatedAt" : 1762730432.4773622,
+          "BTTLastUpdatedAt" : 1762736717.2242031,
           "BTTTriggerType" : 0,
           "BTTTriggerClass" : "BTTTriggerTypeKeyboardShortcut",
           "BTTUUID" : "F4AD5DE3-8102-451E-A788-EE4F0DCA4D0E",
@@ -438,45 +438,46 @@
         },
         {
           "BTTActionCategory" : 0,
-          "BTTLastUpdatedAt" : 1762730432.4773321,
+          "BTTLastUpdatedAt" : 1762737394.512567,
           "BTTTriggerType" : 0,
           "BTTTriggerClass" : "BTTTriggerTypeKeyboardShortcut",
-          "BTTUUID" : "5E5CE4A3-D136-4DDE-A36F-C8D0EA499D1A",
+          "BTTUUID" : "65CC1F9B-DD32-445E-8E9B-E62FF741472D",
           "BTTPredefinedActionType" : 366,
           "BTTPredefinedActionName" : "Empty Placeholder",
           "BTTAdditionalConfiguration" : "1318928",
           "BTTKeyboardShortcutKeyboardType" : 0,
           "BTTTriggerOnDown" : 1,
-          "BTTLayoutIndependentChar" : "s",
+          "BTTLayoutIndependentChar" : "n",
           "BTTEnabled" : 1,
           "BTTEnabled2" : 1,
-          "BTTShortcutKeyCode" : 1,
+          "BTTShortcutKeyCode" : 45,
           "BTTShortcutModifierKeys" : 1310720,
-          "BTTOrder" : 12,
+          "BTTOrder" : 15,
           "BTTAutoAdaptToKeyboardLayout" : 0,
           "BTTAdditionalActions" : [
             {
               "BTTActionCategory" : 0,
-              "BTTLastUpdatedAt" : 1751554349.9566622,
-              "BTTTriggerParentUUID" : "5E5CE4A3-D136-4DDE-A36F-C8D0EA499D1A",
+              "BTTLastUpdatedAt" : 1762737389.995842,
+              "BTTTriggerParentUUID" : "65CC1F9B-DD32-445E-8E9B-E62FF741472D",
               "BTTIsPureAction" : true,
               "BTTTriggerClass" : "BTTTriggerTypeKeyboardShortcut",
-              "BTTUUID" : "05DA3FA8-2CE3-4885-AEA7-D2FE92AA43EB",
-              "BTTPredefinedActionType" : 49,
-              "BTTPredefinedActionName" : "Launch Application  or  Open File  or  Start Apple Script …",
-              "BTTLaunchPath" : "\/Applications\/Visual Studio Code.app",
+              "BTTUUID" : "D1F94E90-E3A6-49AA-ADCB-19AF7F82FF9C",
+              "BTTPredefinedActionType" : 206,
+              "BTTPredefinedActionName" : "Execute Shell Script  or  Task",
+              "BTTShellTaskActionScript" : "cd \"\/Users\/cohen\/Documents\/threadtracker\" &&\n  PYTHONPATH=. THREADS_FILE=\"$HOME\/Documents\/Obsidian Vault\/Threads\/threads.md\" \/Users\/cohen\/.local\/bin\/tt-combo",
+              "BTTShellTaskActionConfig" : "\/bin\/bash:::-c:::-:::",
               "BTTKeyboardShortcutKeyboardType" : 0,
               "BTTEnabled" : 1,
               "BTTEnabled2" : 1,
               "BTTShortcutKeyCode" : -1,
-              "BTTOrder" : 2,
+              "BTTOrder" : 1,
               "BTTAutoAdaptToKeyboardLayout" : 0
             }
           ]
         },
         {
           "BTTActionCategory" : 0,
-          "BTTLastUpdatedAt" : 1762730432.477318,
+          "BTTLastUpdatedAt" : 1762736717.224272,
           "BTTTriggerType" : 0,
           "BTTTriggerClass" : "BTTTriggerTypeKeyboardShortcut",
           "BTTUUID" : "AC178106-9CC2-402D-8E37-08251B76C9E0",
@@ -496,7 +497,7 @@
         },
         {
           "BTTActionCategory" : 0,
-          "BTTLastUpdatedAt" : 1762733015.2889209,
+          "BTTLastUpdatedAt" : 1762736717.22418,
           "BTTTriggerType" : 0,
           "BTTTriggerClass" : "BTTTriggerTypeKeyboardShortcut",
           "BTTUUID" : "61FE7845-EDE7-417D-BBA6-2B390D4036C4",
@@ -535,7 +536,45 @@
         },
         {
           "BTTActionCategory" : 0,
-          "BTTLastUpdatedAt" : 1762730432.477355,
+          "BTTLastUpdatedAt" : 1762736717.2241678,
+          "BTTTriggerType" : 0,
+          "BTTTriggerClass" : "BTTTriggerTypeKeyboardShortcut",
+          "BTTUUID" : "5E5CE4A3-D136-4DDE-A36F-C8D0EA499D1A",
+          "BTTPredefinedActionType" : 366,
+          "BTTPredefinedActionName" : "Empty Placeholder",
+          "BTTAdditionalConfiguration" : "1318928",
+          "BTTKeyboardShortcutKeyboardType" : 0,
+          "BTTTriggerOnDown" : 1,
+          "BTTLayoutIndependentChar" : "s",
+          "BTTEnabled" : 1,
+          "BTTEnabled2" : 1,
+          "BTTShortcutKeyCode" : 1,
+          "BTTShortcutModifierKeys" : 1310720,
+          "BTTOrder" : 12,
+          "BTTAutoAdaptToKeyboardLayout" : 0,
+          "BTTAdditionalActions" : [
+            {
+              "BTTActionCategory" : 0,
+              "BTTLastUpdatedAt" : 1751554349.9566622,
+              "BTTTriggerParentUUID" : "5E5CE4A3-D136-4DDE-A36F-C8D0EA499D1A",
+              "BTTIsPureAction" : true,
+              "BTTTriggerClass" : "BTTTriggerTypeKeyboardShortcut",
+              "BTTUUID" : "05DA3FA8-2CE3-4885-AEA7-D2FE92AA43EB",
+              "BTTPredefinedActionType" : 49,
+              "BTTPredefinedActionName" : "Launch Application  or  Open File  or  Start Apple Script …",
+              "BTTLaunchPath" : "\/Applications\/Visual Studio Code.app",
+              "BTTKeyboardShortcutKeyboardType" : 0,
+              "BTTEnabled" : 1,
+              "BTTEnabled2" : 1,
+              "BTTShortcutKeyCode" : -1,
+              "BTTOrder" : 2,
+              "BTTAutoAdaptToKeyboardLayout" : 0
+            }
+          ]
+        },
+        {
+          "BTTActionCategory" : 0,
+          "BTTLastUpdatedAt" : 1762736717.2241569,
           "BTTTriggerType" : 0,
           "BTTTriggerClass" : "BTTTriggerTypeKeyboardShortcut",
           "BTTUUID" : "334F906D-0AC1-494D-BE21-A74197AB031C",
@@ -573,7 +612,7 @@
         },
         {
           "BTTActionCategory" : 0,
-          "BTTLastUpdatedAt" : 1762730432.4772911,
+          "BTTLastUpdatedAt" : 1762736717.2241921,
           "BTTTriggerType" : 0,
           "BTTTriggerClass" : "BTTTriggerTypeKeyboardShortcut",
           "BTTUUID" : "8964D709-DA0B-46EE-BBE2-3A1116E769F4",
@@ -607,7 +646,7 @@
         },
         {
           "BTTActionCategory" : 0,
-          "BTTLastUpdatedAt" : 1762730432.477314,
+          "BTTLastUpdatedAt" : 1762736717.224283,
           "BTTTriggerType" : 0,
           "BTTTriggerClass" : "BTTTriggerTypeKeyboardShortcut",
           "BTTUUID" : "25BB3DAF-AAEE-4F28-8A1D-9CC5701766B9",
@@ -627,7 +666,7 @@
         },
         {
           "BTTActionCategory" : 0,
-          "BTTLastUpdatedAt" : 1762730432.4773669,
+          "BTTLastUpdatedAt" : 1762736717.224293,
           "BTTTriggerType" : 0,
           "BTTTriggerClass" : "BTTTriggerTypeKeyboardShortcut",
           "BTTUUID" : "821433D6-122C-4A8C-9BE9-2C34D2241DD6",
@@ -647,7 +686,7 @@
         },
         {
           "BTTActionCategory" : 0,
-          "BTTLastUpdatedAt" : 1762729277.119925,
+          "BTTLastUpdatedAt" : 1762736717.224304,
           "BTTTriggerType" : 0,
           "BTTTriggerClass" : "BTTTriggerTypeKeyboardShortcut",
           "BTTUUID" : "12580C2B-B300-490F-ADC1-D05A17BABDCA",
@@ -667,7 +706,7 @@
         },
         {
           "BTTActionCategory" : 0,
-          "BTTLastUpdatedAt" : 1762729277.1199851,
+          "BTTLastUpdatedAt" : 1762736717.2243571,
           "BTTTriggerType" : 0,
           "BTTTriggerClass" : "BTTTriggerTypeKeyboardShortcut",
           "BTTUUID" : "01CF9B8C-0C2F-434B-8923-7F8BC62FFCC1",
@@ -687,7 +726,7 @@
         },
         {
           "BTTActionCategory" : 0,
-          "BTTLastUpdatedAt" : 1762730432.4773369,
+          "BTTLastUpdatedAt" : 1762736717.224314,
           "BTTTriggerType" : 0,
           "BTTTriggerClass" : "BTTTriggerTypeKeyboardShortcut",
           "BTTUUID" : "BC577B90-CF03-4996-81A0-42D621A30D09",
