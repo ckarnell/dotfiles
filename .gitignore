@@ -32,6 +32,19 @@ pack/*/start/*
 pack/*/opt/*
 
 # =========================
+# tmux
+# =========================
+# Ignore tmux-related runtime/session data
+tmux/resurrect/
+tmux/plugins/
+tmux/tpm/
+tmux/*.log
+tmux/*.tmp
+tmux/*.bak
+tmux/*.lock
+tmux/*.sock
+
+# =========================
 # CoC (Conquer of Completion)
 # =========================
 # These are auto-generated; keep only `coc-settings.json` if you edit it manually
