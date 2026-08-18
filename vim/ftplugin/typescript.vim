@@ -40,4 +40,5 @@ nnoremap <leader>gct I// <Esc>A // TODO: Delete<Esc>^
 " Depends on the class not being the last white space in the file.
 nnoremap <leader>change / function <cr>lcwclass<Esc>elcW extends Component<Esc>/ return<cr>lOrender() {<Esc>jv}kk>}kko<BS>}<Esc>
 
-nmap <buffer> <Leader>t : <C-u>echo tsuquyomi#hint()<CR>
+" Was tsuquyomi#hint(). coc-tsserver provides the same hover info.
+nmap <buffer> <Leader>t <Plug>(coc-hover)

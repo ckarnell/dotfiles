@@ -95,13 +95,18 @@ call plug#begin(s:plug_dir)
   Plug 'github/copilot.vim'
   Plug 'lambdalisue/vim-unified-diff'
   Plug 'neoclide/coc.nvim', {'branch': 'release'} " Completion
-  Plug 'Shougo/vimproc.vim', {'do': 'make'}
-  Plug 'Quramy/tsuquyomi'
+  " Plug 'Shougo/vimproc.vim', {'do': 'make'} " Was only needed by tsuquyomi
+  " Plug 'Quramy/tsuquyomi' " Dropped: needs a global tsserver and errors on
+  " startup without one. coc-tsserver covers imports, hover and type defs.
   " Plug 'kh3phr3n/python-syntax'
   " Plug 'yssl/QFEnter'
 
-  " Plug 'w0rp/ale' " Async linting
-  Plug 'ascandella/ale', {'branch': 'mypy-daemon'} " Async linting with dmypy support
+  " Async linting. Was 'ascandella/ale' branch mypy-daemon, a fork archived in
+  " Feb 2020 for its dmypy support. That fork predates ruff entirely, so
+  " g:ale_linters.python = ['ruff', 'mypy'] was silently running mypy only.
+  " Upstream has no dmypy daemon, so mypy is colder now -- the tradeoff for
+  " actually getting ruff plus six years of fixes.
+  Plug 'dense-analysis/ale'
   Plug 'Julian/vim-textobj-variable-segment', {'branch': 'main'} " Variable text object
   " Plug 'Shougo/neocomplete.vim' " Autocompletion. Less powerful than YCM but way less overhead
   Plug 'SirVer/ultisnips' " Snippets!
@@ -127,7 +132,9 @@ call plug#begin(s:plug_dir)
   Plug 'wellle/targets.vim' " Several text objects
   Plug 'xolox/vim-colorscheme-switcher' " Switch colorschemes easily. [z and ]z are mapped for this
   Plug 'xolox/vim-misc' " Required for vim-colorscheme-switcher... really not a fan of this
-  Plug 'sjl/gundo.vim' " Undo tree visualization. Needs has('python3'); see init.vim
+  Plug 'simnalamburt/vim-mundo' " Undo tree visualization. Maintained fork of
+  " the unmaintained sjl/gundo.vim. Still needs has('python3'), which the
+  " Neovim init.vim provides via the pynvim venv.
   Plug 'christoomey/vim-tmux-navigator' " Tmux window navigation
   Plug 'christoomey/vim-sort-motion' " Sorting motion
   Plug 'alfredodeza/pytest.vim' " Pytest integration
@@ -199,9 +206,9 @@ let g:sort_motion_visual = 'gy'
 " Python syntax
 let python_highlight_all = 1
 
-" Gundo
-let g:gundo_prefer_python3 = 1
-nnoremap <F5> :GundoToggle<CR>
+" Mundo (undo tree)
+let g:mundo_prefer_python3 = 1
+nnoremap <F5> :MundoToggle<CR>
 
 " CoC extensions
 " Also had to run ":CocInstall coc-omnisharp"
@@ -217,15 +224,15 @@ let g:coc_global_extensions = ['coc-tsserver']
 augroup auto_import
   autocmd FileType python nnoremap <F4>    :ImportName<CR>
   autocmd FileType python nnoremap <C-F4>  :ImportNameHere<CR>
-  autocmd FileType typescript nnoremap <F4>    :TsuImport<CR>
-  autocmd FileType typescript nnoremap <leader>g    :TsuTypeDefinition<CR>
+  " Was :TsuImport / :TsuTypeDefinition. coc-tsserver equivalents: the code
+  " action at the cursor offers "Add import" on an unresolved symbol.
+  autocmd FileType typescript,typescriptreact nmap <buffer> <F4>       <Plug>(coc-codeaction-cursor)
+  autocmd FileType typescript,typescriptreact nmap <buffer> <leader>g  <Plug>(coc-type-definition)
 augroup END
 
-" Typescript settings
-let g:tsuquyomi_disable_quickfix = 1 
-let g:tsuquyomi_single_quote_import	= 1
-let g:tsuquyomi_baseurl_import_path = 1
-nnoremap <leader>i :TsuImport<cr>
+" Typescript settings. Import handling is coc-tsserver's job now.
+nmap <leader>i <Plug>(coc-codeaction-cursor)
+nnoremap <leader>oi :CocCommand tsserver.organizeImports<cr>
 
 " Ale
 " Check :ALEInfo to see what's going on
@@ -238,29 +245,33 @@ nnoremap <leader>i :TsuImport<cr>
 " \     'read_temporary_file': 1,
 " \   }}, 'yapf'],
 let g:ale_linters_explicit = 1
+" Note: 'scsslint' is a LINTER in ALE, not a fixer -- there is no
+" autoload/ale/fixers/scsslint.vim, so the old 'scss': ['scsslint'] fixer entry
+" never did anything.
 let g:ale_fixers = {
 \   'javascript': ['eslint', 'prettier'],
 \	  'typescript': ['prettier', 'tslint', 'eslint'],
 \	  'typescriptreact': ['prettier', 'tslint', 'eslint'],
 \   'python': ['black'],
-\   'scss': ['scsslint'],
 \   'styler': {
 \       'function': 'ale#fixers#styler#Fix',
 \       'suggested_filetypes': ['r', 'R'],
 \       'description': 'Fix R files with styler.',
 \   },
 \}
-"let g:ale_linters = {
+" 'stylelint' is only an ALE linter for css/scss/sugarss, never for
+" javascript/typescript, and there is no cs/omnisharp linter. Both were
+" silently ignored; dropped rather than left as decoration.
+let g:ale_linters = {
 \   'python': [
 \        'ruff', 'mypy',
 \    ],
 \   'vim': ['vint'],
-\   'scss': ['scsslint'],
+\   'scss': ['scsslint', 'stylelint'],
 \   'sql': ['sqlint'],
-\   'javascript': ['eslint', 'stylelint'],
-\   'typescript': ['tsserver', 'stylelint', 'tslint'],
-\   'typescriptreact': ['tsserver', 'stylelint', 'tslint'],
-\    'cs': ['omnisharp'],
+\   'javascript': ['eslint'],
+\   'typescript': ['tsserver', 'tslint'],
+\   'typescriptreact': ['tsserver', 'tslint'],
 \}
 let g:ale_sign_error = '🐛'
 let g:ale_sign_warning = '🐋'
@@ -269,9 +280,12 @@ let g:ale_lint_on_text_changed = 0
 let g:ale_history_log_output = 0
 let g:ale_python_mypy_ignore_invalid_syntax = 1
 " let g:ale_python_mypy_options = '--follow-imports skip'
-let g:ale_python_mypy_use_daemon = 1
-let g:ale_python_mypy_autostart_daemon = 1
-let g:ale_python_mypy_daemon_options = '--follow-imports=normal'
+" The mypy daemon options below only existed in the archived ascandella fork.
+" Upstream ALE has no dmypy support, so these are inert -- kept commented as a
+" record of what was lost in the swap.
+" let g:ale_python_mypy_use_daemon = 1
+" let g:ale_python_mypy_autostart_daemon = 1
+" let g:ale_python_mypy_daemon_options = '--follow-imports=normal'
 let g:ale_python_mypy_auto_pipenv = 1 " Not sure what this does, borrowing from Harris
 let g:ale_python_pylint_change_directory = 0
 let g:ale_typescript_tsserver_config_path = '~/spark/tsconfig.json'
