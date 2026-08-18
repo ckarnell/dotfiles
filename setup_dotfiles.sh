@@ -61,6 +61,11 @@ link tmux.conf "$HOME/.tmux.conf"
 link zshrc     "$HOME/.zshrc"
 link vim       "$HOME/.vim"
 link tmux      "$HOME/.tmux"
+# Neovim reads ~/.config/nvim, not ~/.vim. nvim/init.vim is only a bootstrap:
+# it adds vim/ to Neovim's runtimepath and sources the shared vimrc, so both
+# editors stay on one config. See nvim/init.vim for why it also has to clear a
+# few Neovim default mappings.
+link nvim      "$HOME/.config/nvim"
 
 # ---------------------------------------------------------------------- claude
 

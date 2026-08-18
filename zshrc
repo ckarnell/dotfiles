@@ -149,8 +149,10 @@ PATH=$PATH:/usr/local/sbin
 PATH=$PATH:/usr/local/bin
 PATH="$PATH:/Users/cohenkarnell/Downloads/Visual\ Studio\ Code.app/Contents/Resources/app/bin"
 
-# Use macvim instead of normal vim for the terminal
-alias vim="mvim -v"
+# Neovim is the daily driver. MacVim is still installed and fully configured;
+# `oldvim` is the escape hatch if something in Neovim misbehaves.
+alias vim="nvim"
+alias oldvim="mvim -v"
 # alias vim='/path/to/MacVim.app/Contents/MacOS/Vim'
 # Source this file
 alias sb="source ~/.bashrc"
@@ -158,8 +160,9 @@ alias sb="source ~/.bashrc"
 alias vb='vim ~/.bashrc'
 # Source tmux
 alias st="tmux source-file ~/.tmux.conf"
-# Edit .vimrc
-alias vv='mvim ~/.vimrc'
+# Edit the vimrc. Note this is ~/dotfiles/vimrc, the file VIMINIT actually
+# sources -- NOT ~/.vimrc, which is a stale duplicate that nothing reads.
+alias vv='nvim ~/dotfiles/vimrc'
 
 # Alias for ctags since it was installed with homebrew
 export PATH="/opt/homebrew/bin:$PATH"
@@ -370,10 +373,19 @@ export PATH="$DOTNET_ROOT:$PATH"
 # where your config lives
 export VIMCFG="$HOME/dotfiles"
 
-# Tell Vim to (a) use that runtime dir and (b) source that vimrc
+# Tell Vim to (a) use that runtime dir and (b) source that vimrc.
+#
+# Neovim honours $VIMINIT TOO, and it takes precedence over ~/.config/nvim/init.vim.
+# Without the has("nvim") branch below, Neovim silently skips its own init file
+# and runs the Vim bootstrap instead -- which loses the python3 provider setup
+# and the Neovim plugin dir. So dispatch on the editor here.
 export VIMINIT='
-let $MYVIMRC = $VIMCFG . "/vimrc" |
-execute "set runtimepath^=" . fnameescape($VIMCFG . "/vim") |
-execute "set packpath^="   . fnameescape($VIMCFG . "/vim") |
-execute "source " . fnameescape($MYVIMRC)
+if has("nvim") |
+  execute "source " . fnameescape($VIMCFG . "/nvim/init.vim") |
+else |
+  let $MYVIMRC = $VIMCFG . "/vimrc" |
+  execute "set runtimepath^=" . fnameescape($VIMCFG . "/vim") |
+  execute "set packpath^="   . fnameescape($VIMCFG . "/vim") |
+  execute "source " . fnameescape($MYVIMRC) |
+endif
 '

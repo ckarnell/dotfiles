@@ -20,17 +20,21 @@
 " => General
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
-" Output codes
-let &t_SI .= "\<Esc>[?2004h"
-let &t_EI .= "\<Esc>[?2004l"
+" Bracketed paste. Vim only: Neovim handles bracketed paste natively and has
+" removed 'pastetoggle' outright, so this block raises E519 there.
+if !has('nvim')
+  " Output codes
+  let &t_SI .= "\<Esc>[?2004h"
+  let &t_EI .= "\<Esc>[?2004l"
 
-" Set paste and unpaste modes when pasting
-inoremap <special> <expr> <Esc>[200~ XTermPasteBegin()
-function! XTermPasteBegin()
-  set pastetoggle=<Esc>[201~
-  set paste
-  return ''
-endfunction
+  " Set paste and unpaste modes when pasting
+  inoremap <special> <expr> <Esc>[200~ XTermPasteBegin()
+  function! XTermPasteBegin()
+    set pastetoggle=<Esc>[201~
+    set paste
+    return ''
+  endfunction
+endif
 
 " Sets how many lines of history VIM has to remember
 set history=700
@@ -42,8 +46,10 @@ set autoread
 " let g:mapleader = "\<space>"
 let g:mapleader = " " " Is this better?
 
-" Source vim easily
-nnoremap <leader>v :source ~/.vimrc<cr>
+" Source vim easily. $MYVIMRC rather than a hardcoded ~/.vimrc: under Vim,
+" VIMINIT points it at ~/dotfiles/vimrc, and under Neovim it is the init.vim
+" that sets up the runtimepath before sourcing this file.
+nnoremap <leader>v :source $MYVIMRC<cr>
 
 " ctags path
 set tags=tags;
@@ -70,81 +76,94 @@ set path+=/Users/cohen/trial-simulation-data-extraction/**
 " set nocompatible              " be iMproved, required " TODO: Delete
 filetype off                  " required
 
-call plug#begin('~/.vim/plugged')
-  if has('nvim')
-    " Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
-    Plug 'neoclide/coc.nvim', {'branch': 'release'} # Completion I guess
-  else
-    set pyxversion=3
-    " Run ':py3 import pip; pip.main(['install', '--user', 'pynvim'])' for setup,
-    " or follow instructions here: https://github.com/roxma/vim-hug-neovim-rpc
+" Vim and Neovim get separate plugin trees. They need slightly different plugin
+" sets (see the editor-specific blocks below), and keeping them apart means a
+" broken Neovim plugin can never take the working MacVim setup down with it.
+" Run :PlugInstall from whichever editor you are in; they do not share state.
+if has('nvim')
+  let s:plug_dir = '~/.local/share/nvim/plugged'
+else
+  let s:plug_dir = '~/.vim/plugged'
+endif
 
-    " Plug 'OmniSharp/omnisharp-vim'
-    Plug 'tpope/vim-rhubarb'
-    Plug 'github/copilot.vim'
-    Plug 'lambdalisue/vim-unified-diff'
+call plug#begin(s:plug_dir)
+  " ------------------------------------------------------------------
+  " Shared: works in both Vim and Neovim
+  " ------------------------------------------------------------------
+  " Plug 'OmniSharp/omnisharp-vim'
+  Plug 'tpope/vim-rhubarb'
+  Plug 'github/copilot.vim'
+  Plug 'lambdalisue/vim-unified-diff'
+  Plug 'neoclide/coc.nvim', {'branch': 'release'} " Completion
+  Plug 'Shougo/vimproc.vim', {'do': 'make'}
+  Plug 'Quramy/tsuquyomi'
+  " Plug 'kh3phr3n/python-syntax'
+  " Plug 'yssl/QFEnter'
+
+  " Plug 'w0rp/ale' " Async linting
+  Plug 'ascandella/ale', {'branch': 'mypy-daemon'} " Async linting with dmypy support
+  Plug 'Julian/vim-textobj-variable-segment', {'branch': 'main'} " Variable text object
+  " Plug 'Shougo/neocomplete.vim' " Autocompletion. Less powerful than YCM but way less overhead
+  Plug 'SirVer/ultisnips' " Snippets!
+  Plug 'airblade/vim-gitgutter', {'branch': 'main'} " Show git info in the gutter
+  Plug 'ckarnell/Antonys-macro-repeater' " Repeat macros
+  Plug 'ckarnell/history-traverse' " Go back and forth in your window's buffer history
+  Plug 'ctrlpvim/ctrlp.vim' " Fuzzy file finding
+  Plug 'google/vim-searchindex' " Shows the total number of search results after every search
+  Plug 'junegunn/vader.vim' " Vimscript testing framework
+  Plug 'kana/vim-textobj-user' " Required for the variable text object plugin
+  Plug 'keith/investigate.vim' " Search docs from inside vim using K or gK
+  Plug 'mhinz/vim-grepper' " Provides a grepping motion and different grepping tools
+  Plug 'michaeljsmith/vim-indent-object' " Create an indentation text object, 'i'
+  Plug 'nelstrom/vim-visual-star-search' " Make * and # behave how they should in visual mode
+  Plug 'tpope/tpope-vim-abolish' " Substitution generation
+  Plug 'tpope/vim-commentary' " Comment stuff out
+  Plug 'tpope/vim-fugitive' " Execute git commands from inside vim
+  Plug 'tpope/vim-repeat' " Repeat plugin commands with '.'
+  Plug 'tpope/vim-surround' " Add the surround motion, s
+  Plug 'tpope/vim-unimpaired' " Decent defaults... look at the docs for the options
+  Plug 'tpope/vim-vinegar' " Good settings for the netrw file explorer
+  Plug 'unblevable/quick-scope' " Improve 'f' and 't' motions in vim
+  Plug 'wellle/targets.vim' " Several text objects
+  Plug 'xolox/vim-colorscheme-switcher' " Switch colorschemes easily. [z and ]z are mapped for this
+  Plug 'xolox/vim-misc' " Required for vim-colorscheme-switcher... really not a fan of this
+  Plug 'sjl/gundo.vim' " Undo tree visualization. Needs has('python3'); see init.vim
+  Plug 'christoomey/vim-tmux-navigator' " Tmux window navigation
+  Plug 'christoomey/vim-sort-motion' " Sorting motion
+  Plug 'alfredodeza/pytest.vim' " Pytest integration
+  " Color schemes
+  Plug 'morhetz/gruvbox'
+  Plug 'mgedmin/python-imports.vim' " Auto imports for Python
+
+  " File type formatting
+  " Plug 'chrisbra/csv.vim' " scss syntax highlighting and indentation support
+
+  " Syntax highlighting
+  Plug 'cakebaker/scss-syntax.vim' " scss syntax highlighting and indentation support
+  Plug 'elzr/vim-json' " Json syntax highlighting
+  Plug 'vim-python/python-syntax'
+  " The following two are recommended to work together
+  " Plug 'leafgarland/typescript-vim'
+  " Plug 'peitalin/vim-jsx-typescript' " TODO: Reenable?
+  Plug 'jparise/vim-graphql'
+  Plug 'pangloss/vim-javascript' " Javascript indentation and syntax support TODO: Reenable?
+  Plug 'davidhalter/jedi-vim' " Use this for smarter goto definition in Python
+  Plug 'tpope/vim-projectionist'
+  " Plug 'python-rope/ropevim' " Refactoring tools for Python
+  Plug 'jaxbot/semantic-highlight.vim'
+
+  " ------------------------------------------------------------------
+  " Vim only
+  " ------------------------------------------------------------------
+  if !has('nvim')
+    set pyxversion=3
+    " nvim-yarp and vim-hug-neovim-rpc are shims that let Neovim-only plugins
+    " run under Vim. Neovim provides that RPC layer natively, so installing
+    " them there is at best redundant and at worst actively conflicting.
     Plug 'roxma/nvim-yarp'
     Plug 'roxma/vim-hug-neovim-rpc'
     " Plug 'Shougo/deoplete.nvim'
-    Plug 'neoclide/coc.nvim', {'branch': 'release'}
     " Plug 'deoplete-plugins/deoplete-jedi'
-    Plug 'Shougo/vimproc.vim', {'do': 'make'}
-    Plug 'Quramy/tsuquyomi'
-    " Plug 'kh3phr3n/python-syntax'
-    " Plug 'yssl/QFEnter'
-
-    " Plug 'w0rp/ale' " Async linting
-    Plug 'ascandella/ale', {'branch': 'mypy-daemon'} " Async linting with dmypy support
-    Plug 'Julian/vim-textobj-variable-segment', {'branch': 'main'} " Variable text object
-    " Plug 'Shougo/neocomplete.vim' " Autocompletion. Less powerful than YCM but way less overhead
-    Plug 'SirVer/ultisnips' " Snippets!
-    Plug 'airblade/vim-gitgutter', {'branch': 'main'} " Show git info in the gutter
-    Plug 'ckarnell/Antonys-macro-repeater' " Repeat macros
-    Plug 'ckarnell/history-traverse' " Go back and forth in your window's buffer history
-    Plug 'ctrlpvim/ctrlp.vim' " Fuzzy file finding
-    Plug 'google/vim-searchindex' " Shows the total number of search results after every search
-    Plug 'junegunn/vader.vim' " Vimscript testing framework
-    Plug 'kana/vim-textobj-user' " Required for the variable text object plugin
-    Plug 'keith/investigate.vim' " Search docs from inside vim using K or gK
-    Plug 'mhinz/vim-grepper' " Provides a grepping motion and different grepping tools
-    Plug 'michaeljsmith/vim-indent-object' " Create an indentation text object, 'i'
-    Plug 'nelstrom/vim-visual-star-search' " Make * and # behave how they should in visual mode
-    Plug 'tpope/tpope-vim-abolish' " Substitution generation
-    Plug 'tpope/vim-commentary' " Comment stuff out
-    Plug 'tpope/vim-fugitive' " Execute git commands from inside vim
-    Plug 'tpope/vim-repeat' " Repeat plugin commands with '.'
-    Plug 'tpope/vim-surround' " Add the surround motion, s
-    Plug 'tpope/vim-unimpaired' " Decent defaults... look at the docs for the options
-    Plug 'tpope/vim-vinegar' " Good settings for the netrw file explorer
-    Plug 'unblevable/quick-scope' " Improve 'f' and 't' motions in vim
-    Plug 'wellle/targets.vim' " Several text objects
-    Plug 'xolox/vim-colorscheme-switcher' " Switch colorschemes easily. [z and ]z are mapped for this
-    Plug 'xolox/vim-misc' " Required for vim-colorscheme-switcher... really not a fan of this
-    Plug 'sjl/gundo.vim' " Undo tree visualization
-    Plug 'christoomey/vim-tmux-navigator' " Tmux window navigation
-    Plug 'christoomey/vim-sort-motion' " Sorting motion
-    Plug 'alfredodeza/pytest.vim' " Pytest integration
-    " Color schemes
-    Plug 'morhetz/gruvbox'
-    Plug 'mgedmin/python-imports.vim' " Auto imports for Python
-
-    " File type formatting
-    " Plug 'chrisbra/csv.vim' " scss syntax highlighting and indentation support
-   
-    " Syntax highlighting
-    Plug 'cakebaker/scss-syntax.vim' " scss syntax highlighting and indentation support
-    Plug 'elzr/vim-json' " Json syntax highlighting
-    Plug 'vim-python/python-syntax'
-    " The following two are recommended to work together
-    " Plug 'leafgarland/typescript-vim'
-    " Plug 'peitalin/vim-jsx-typescript' " TODO: Reenable?
-    Plug 'jparise/vim-graphql'
-    Plug 'pangloss/vim-javascript' " Javascript indentation and syntax support TODO: Reenable?
-    " Plug 'deoplete-plugins/deoplete-jedi' " Autocomplete for Python using deoplete
-    Plug 'davidhalter/jedi-vim' " Use this for smarter goto definition in Python
-    Plug 'tpope/vim-projectionist'
-    " Plug 'python-rope/ropevim' " Refactoring tools for Python
-    Plug 'jaxbot/semantic-highlight.vim'
   endif
 call plug#end()
 
@@ -231,7 +250,7 @@ let g:ale_fixers = {
 \       'description': 'Fix R files with styler.',
 \   },
 \}
-let g:ale_linters = {
+"let g:ale_linters = {
 \   'python': [
 \        'ruff', 'mypy',
 \    ],
@@ -501,6 +520,27 @@ if has('gui_running')
     set guicursor+=i:blinkwait10
 endif
 
+" Neovide (and other Neovim GUIs) do not set has('gui_running') -- it is always
+" 0 under Neovim -- so the MacVim block above never runs there. 'guioptions'
+" and 'guitablabel' do not exist in Neovim either; the chrome they removed is
+" simply not drawn.
+if exists('g:neovide')
+  set guifont=Menlo:h13
+  highlight Cursor  guifg=white guibg=black
+  highlight iCursor guifg=white guibg=steelblue
+  set guicursor=n-v-c:block-Cursor
+  set guicursor+=i:ver100-iCursor
+  set guicursor+=n-v-c:blinkon0
+  set guicursor+=i:blinkwait10
+  let g:neovide_cursor_animation_length = 0
+endif
+
+" 24-bit colour when the terminal advertises it. Gruvbox is defined in true
+" colour and gets approximated down to the 256-colour cube without this.
+if has('nvim') && ($COLORTERM ==# 'truecolor' || $COLORTERM ==# '24bit')
+  set termguicolors
+endif
+
 set background=dark " This is totally required for some reason
 
 " Set utf8 as standard encoding and en_US as the standard language
@@ -572,7 +612,16 @@ nnoremap <c-j> <c-w>j
 nnoremap <c-k> <c-w>k
 nnoremap <c-h> <c-w>h
 nnoremap <c-l> <c-w>l
-if has('terminal')
+" Same window navigation from inside a terminal buffer. The escape mechanism
+" differs: Vim's terminal has a 'termkey' prefix (<C-B>), Neovim instead leaves
+" terminal mode with <C-\><C-N>. has('terminal') is 0 under Neovim, so without
+" the second branch these mappings would simply not exist there.
+if has('nvim')
+  tnoremap <c-j> <c-\><c-n><c-w>j
+  tnoremap <c-k> <c-\><c-n><c-w>k
+  tnoremap <c-h> <c-\><c-n><c-w>h
+  tnoremap <c-l> <c-\><c-n><c-w>l
+elseif has('terminal')
   " set termkey=<C-B>
   tnoremap <c-j> <c-b>j
   tnoremap <c-k> <c-b>k

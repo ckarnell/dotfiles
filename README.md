@@ -17,7 +17,7 @@ you pull changes or want to repair a machine's state.
 
 | Section | Action |
 | --- | --- |
-| Shell and editor | Symlinks `.vimrc`, `.tmux.conf`, `.zshrc`, `.vim`, `.tmux` |
+| Shell and editor | Symlinks `.vimrc`, `.tmux.conf`, `.zshrc`, `.vim`, `.tmux`, `~/.config/nvim` |
 | Claude Code | Symlinks `~/.claude/CLAUDE.md`, `~/.claude/settings.json`, `~/.claude/bin/shared-chrome.sh` |
 | Launch agents | Copies plists into `~/Library/LaunchAgents` and loads them |
 | MCP servers | Registers Claude Code MCP servers through the `claude` CLI |
@@ -32,7 +32,8 @@ reports what it skipped and keeps going.
 ## Layout
 
 ```
-vimrc, vim/          Vim
+vimrc, vim/          Vim and Neovim (shared config and runtime dir)
+nvim/                Neovim bootstrap, linked into ~/.config/nvim
 tmux.conf, tmux/     tmux
 zshrc                Zsh
 claude/              Claude Code config, linked into ~/.claude
