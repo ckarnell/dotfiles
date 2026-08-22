@@ -218,6 +218,17 @@ packadd! cfilter " Filtering quickfix and location lists
 " => VIM_plugin_settings
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
+" has('gui_running') no longer means "MacVim". It used to: Neovim reported 0
+" unconditionally, so every `if has('gui_running')` block below was in practice
+" a MacVim block. Neovim 0.12 reports 1 whenever a GUI frontend is attached, so
+" under Neovide those blocks started running and setting options Neovim does
+" not have -- `set guitablabel` raised E519 on every launch. Verified both ways
+" on 0.12.4: terminal Neovim 0, Neovide 1, MacVim 1.
+"
+" s:macvim is the test they were always reaching for. Neovide gets its own
+" block further down, in Colors_and_Fonts.
+let s:macvim = has('gui_running') && !has('nvim')
+
 " Change sort motion mappings
 let g:sort_motion = 'gy'
 let g:sort_motion_lines = 'gyy'
@@ -348,7 +359,7 @@ nmap [c <Plug>(GitGutterPrevHunk)
 " Use :UltiSnipsEdit to edit snippets for the current filetype on the fly
 nnoremap <leader>ne :UltiSnipsEdit<cr>
 " Trigger configuration. Do not use <tab> if you use https://github.com/Valloric/YouCompleteMe.
-if has('gui_running')
+if s:macvim
     let g:UltiSnipsUsePythonVersion=3
 end
 let g:UltiSnipsExpandTrigger='<c-l>'
@@ -417,8 +428,9 @@ endif
 " vim-grepper mapping
 nnoremap <leader>gs :Grepper<cr>
 
-" Quick-scope and semantic highlighting color settings
-if has('gui_running')
+" Quick-scope and semantic highlighting color settings. Neovide takes the
+" else branch: it wants real highlight groups, not MacVim's guicursor.
+if s:macvim
     " let g:semanticEnableFileTypes = ['javascript', 'typescript', 'python']
     " let g:qs_first_occurrence_highlight_color = '#afff5f'
     " let g:qs_second_occurrence_highlight_color = '#5fffff'
@@ -563,7 +575,7 @@ map ]z :NextColorScheme<cr>
 map [z :PrevColorScheme<cr>
 
 syntax enable
-if has('gui_running')
+if s:macvim
     colorscheme gruvbox " Default GUI scheme
 else
     colorscheme gruvbox " Default terminal scheme
@@ -571,8 +583,10 @@ else
 endif
 " colorscheme crunchbang " gui only
 
-" Set extra options when running in GUI mode
-if has('gui_running')
+" Set extra options when running in GUI mode. MacVim only: 'guitablabel' does
+" not exist in Neovim and raises E519 there, and 'guioptions' is accepted but
+" inert, so none of this belongs on the Neovide path.
+if s:macvim
     " set guioptions+=e
     set t_Co=256
     set guitablabel=%M\ %t
@@ -588,10 +602,11 @@ if has('gui_running')
     set guicursor+=i:blinkwait10
 endif
 
-" Neovide (and other Neovim GUIs) do not set has('gui_running') -- it is always
-" 0 under Neovim -- so the MacVim block above never runs there. 'guioptions'
-" and 'guitablabel' do not exist in Neovim either; the chrome they removed is
-" simply not drawn.
+" Neovide's equivalent of the MacVim block above. Neovim has no 'guioptions'
+" or 'guitablabel' -- the chrome those removed is simply never drawn -- so only
+" the cursor and font settings carry over. g:neovide is set by Neovide before
+" it attaches its UI, and with --embed Neovim defers sourcing this file until
+" that attach, which is why exists() is already true here.
 if exists('g:neovide')
   set guifont=Menlo:h13
   highlight Cursor  guifg=white guibg=black
