@@ -616,6 +616,26 @@ if exists('g:neovide')
   set guicursor+=n-v-c:blinkon0
   set guicursor+=i:blinkwait10
   let g:neovide_cursor_animation_length = 0
+
+  " Command-key chords. Neovide forwards these to Neovim as <D-...> keycodes
+  " and Neovim has no default mapping for any of them, so unmapped they arrive
+  " as literal text -- Cmd-V in insert mode typed the five characters "<D-v>".
+  " MacVim never needed this because it handles Cmd-C/Cmd-V in its own GUI
+  " layer before Vim ever sees a key.
+  "
+  " <C-r><C-o>+ rather than <C-r>+ so a multi-line paste goes in verbatim
+  " instead of having 'autoindent' applied to every line, which is what turns
+  " pasted code into a staircase.
+  nnoremap <D-v> "+p
+  vnoremap <D-v> "+p
+  inoremap <D-v> <C-r><C-o>+
+  cnoremap <D-v> <C-r>+
+  " In a terminal buffer the register has to be written to the job's channel;
+  " a normal-mode put would only edit the scrollback.
+  tnoremap <D-v> <Cmd>call chansend(&channel, getreg('+'))<CR>
+
+  " Cmd-C is the other half of the same problem.
+  vnoremap <D-c> "+y
 endif
 
 " 24-bit colour when the terminal advertises it. Gruvbox is defined in true
