@@ -663,6 +663,18 @@ set nobackup
 set nowritebackup
 set noswapfile
 
+" Undo history does need to survive, though: vim-mundo is installed to browse
+" an undo tree that, without this, was thrown away every time a buffer closed.
+" Neovim defaults 'undodir' to stdpath('state'); Vim has no default worth using
+" so it gets an explicit one.
+set undofile
+if !has('nvim')
+  let &undodir = expand('~/.vim/undo')
+  if !isdirectory(&undodir)
+    call mkdir(&undodir, 'p', 0700)
+  endif
+endif
+
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Text_tab_and_indent_related
