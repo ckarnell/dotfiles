@@ -94,7 +94,6 @@ call plug#begin(s:plug_dir)
   Plug 'tpope/vim-rhubarb'
   Plug 'github/copilot.vim'
   Plug 'lambdalisue/vim-unified-diff'
-  Plug 'neoclide/coc.nvim', {'branch': 'release'} " Completion
   " Plug 'Shougo/vimproc.vim', {'do': 'make'} " Was only needed by tsuquyomi
   " Plug 'Quramy/tsuquyomi' " Dropped: needs a global tsserver and errors on
   " startup without one. coc-tsserver covers imports, hover and type defs.
@@ -113,7 +112,6 @@ call plug#begin(s:plug_dir)
   Plug 'airblade/vim-gitgutter', {'branch': 'main'} " Show git info in the gutter
   Plug 'ckarnell/Antonys-macro-repeater' " Repeat macros
   Plug 'ckarnell/history-traverse' " Go back and forth in your window's buffer history
-  Plug 'ctrlpvim/ctrlp.vim' " Fuzzy file finding
   Plug 'google/vim-searchindex' " Shows the total number of search results after every search
   Plug 'junegunn/vader.vim' " Vimscript testing framework
   Plug 'kana/vim-textobj-user' " Required for the variable text object plugin
@@ -145,25 +143,47 @@ call plug#begin(s:plug_dir)
   " File type formatting
   " Plug 'chrisbra/csv.vim' " scss syntax highlighting and indentation support
 
-  " Syntax highlighting
-  Plug 'cakebaker/scss-syntax.vim' " scss syntax highlighting and indentation support
-  Plug 'elzr/vim-json' " Json syntax highlighting
-  Plug 'vim-python/python-syntax'
+  " Syntax highlighting. Neovim gets these from Treesitter instead; see the
+  " Neovim-only block below.
+  if !has('nvim')
+    Plug 'cakebaker/scss-syntax.vim' " scss syntax highlighting and indentation support
+    Plug 'elzr/vim-json' " Json syntax highlighting
+    Plug 'vim-python/python-syntax'
+    Plug 'jparise/vim-graphql'
+    Plug 'pangloss/vim-javascript' " Javascript indentation and syntax support
+  endif
   " The following two are recommended to work together
   " Plug 'leafgarland/typescript-vim'
   " Plug 'peitalin/vim-jsx-typescript' " TODO: Reenable?
-  Plug 'jparise/vim-graphql'
-  Plug 'pangloss/vim-javascript' " Javascript indentation and syntax support TODO: Reenable?
-  Plug 'davidhalter/jedi-vim' " Use this for smarter goto definition in Python
   Plug 'tpope/vim-projectionist'
   " Plug 'python-rope/ropevim' " Refactoring tools for Python
   Plug 'jaxbot/semantic-highlight.vim'
+
+  " ------------------------------------------------------------------
+  " Neovim only
+  "
+  " Neovim 0.12 ships an LSP client, a Treesitter runtime and a fuzzy
+  " completion engine that Vim does not have. These four plugins are the
+  " thinnest wiring that turns those into a working setup; between them they
+  " replace coc.nvim (plus its separate node-based extension manager),
+  " jedi-vim, ctrlp and five syntax plugins. Configuration lives in
+  " nvim/lua/editor/, sourced at the end of nvim/init.vim.
+  " ------------------------------------------------------------------
+  if has('nvim')
+    Plug 'neovim/nvim-lspconfig'   " Server definitions for the built-in LSP client
+    Plug 'saghen/blink.cmp', {'tag': '*'} " Completion, in place of coc's popup
+    Plug 'nvim-treesitter/nvim-treesitter', {'branch': 'main'} " Syntax + indent
+    Plug 'ibhagwan/fzf-lua'        " Fuzzy files, live grep, LSP symbols
+  endif
 
   " ------------------------------------------------------------------
   " Vim only
   " ------------------------------------------------------------------
   if !has('nvim')
     set pyxversion=3
+    Plug 'neoclide/coc.nvim', {'branch': 'release'} " Completion. Neovim uses its own LSP client.
+    Plug 'ctrlpvim/ctrlp.vim' " Fuzzy file finding. Neovim uses fzf-lua.
+    Plug 'davidhalter/jedi-vim' " Python goto/usages. Neovim uses basedpyright over LSP.
     " nvim-yarp and vim-hug-neovim-rpc are shims that let Neovim-only plugins
     " run under Vim. Neovim provides that RPC layer natively, so installing
     " them there is at best redundant and at worst actively conflicting.
@@ -210,7 +230,8 @@ let python_highlight_all = 1
 let g:mundo_prefer_python3 = 1
 nnoremap <F5> :MundoToggle<CR>
 
-" CoC extensions
+" CoC extensions. Vim only -- Neovim talks to tsserver through its own LSP
+" client, so coc is not even installed there (see the plugin block).
 " Also had to run ":CocInstall coc-omnisharp"
 let g:coc_global_extensions = ['coc-tsserver']
 " Gonna try Plug 'OmniSharp/omnisharp-vim' instead
@@ -224,15 +245,22 @@ let g:coc_global_extensions = ['coc-tsserver']
 augroup auto_import
   autocmd FileType python nnoremap <F4>    :ImportName<CR>
   autocmd FileType python nnoremap <C-F4>  :ImportNameHere<CR>
-  " Was :TsuImport / :TsuTypeDefinition. coc-tsserver equivalents: the code
-  " action at the cursor offers "Add import" on an unresolved symbol.
-  autocmd FileType typescript,typescriptreact nmap <buffer> <F4>       <Plug>(coc-codeaction-cursor)
-  autocmd FileType typescript,typescriptreact nmap <buffer> <leader>g  <Plug>(coc-type-definition)
 augroup END
 
-" Typescript settings. Import handling is coc-tsserver's job now.
-nmap <leader>i <Plug>(coc-codeaction-cursor)
-nnoremap <leader>oi :CocCommand tsserver.organizeImports<cr>
+" Typescript import handling. Vim goes through coc; Neovim binds the same keys
+" to the equivalent LSP calls in nvim/lua/editor/lsp.lua, so <F4>, <leader>i,
+" <leader>g and <leader>oi mean the same thing in both editors.
+if !has('nvim')
+  " Was :TsuImport / :TsuTypeDefinition. coc-tsserver equivalents: the code
+  " action at the cursor offers "Add import" on an unresolved symbol.
+  augroup auto_import_ts
+    autocmd!
+    autocmd FileType typescript,typescriptreact nmap <buffer> <F4>       <Plug>(coc-codeaction-cursor)
+    autocmd FileType typescript,typescriptreact nmap <buffer> <leader>g  <Plug>(coc-type-definition)
+  augroup END
+  nmap <leader>i <Plug>(coc-codeaction-cursor)
+  nnoremap <leader>oi :CocCommand tsserver.organizeImports<cr>
+endif
 
 " Ale
 " Check :ALEInfo to see what's going on
@@ -294,6 +322,20 @@ let g:ale_typescript_tsserver_config_path = '~/spark/tsconfig.json'
 " nmap <silent> <C-k> <Plug>(ale_previous_wrap)
 " nmap <silent> <C-j> <Plug>(ale_next_wrap)
 
+" Under Neovim the built-in LSP client already reports diagnostics for every
+" filetype above, so ALE's linters would draw a second copy of every message in
+" the same gutter. Its fixers stay: prettier and eslint are still the thing
+" that formats JS/TS on save. Python drops out because ruff-lsp formats it,
+" which also retires 'black' -- worth knowing that as configured today none of
+" ruff, mypy or black were actually installed, so this half of ALE has been
+" running as decoration for a while.
+if has('nvim')
+  let g:ale_linters = {}
+  if has_key(g:ale_fixers, 'python')
+    call remove(g:ale_fixers, 'python')
+  endif
+endif
+
 " Gitgutter settings
 let g:gitgutter_map_keys = 0 " Do this or it worsens your <leader>h settings
 nmap <leader>gs <Plug>(GitGutterStageHunk)
@@ -317,22 +359,28 @@ let g:UltiSnipsDir='~/.vim/UltiSnips'
 " If you want :UltiSnipsEdit to split your window.
 let g:UltiSnipsEditSplit='vertical'
 
-" Run :CocConfig and past this into the file it opens:
+" Completion popup keys. Vim drives coc's popup; Neovim drives blink.cmp's,
+" which is configured with the same three keys in nvim/lua/editor/completion.lua
+" so the muscle memory is identical in both editors: Tab / S-Tab cycle, CR
+" accepts, nothing is preselected.
+"
+" Run :CocConfig and paste this into the file it opens:
 "{
 "  "suggest.noselect": true
 "}
+if !has('nvim')
+  " Tab cycles; Shift-Tab cycles backwards
+  inoremap <silent><expr> <Tab>    coc#pum#visible() ? coc#pum#next(1)  : (CheckBackspace() ? "\<Tab>" : coc#refresh())
+  inoremap <silent><expr> <S-Tab>  coc#pum#visible() ? coc#pum#prev(1)  : "\<C-h>"
 
-" Tab cycles; Shift-Tab cycles backwards
-inoremap <silent><expr> <Tab>    coc#pum#visible() ? coc#pum#next(1)  : (CheckBackspace() ? "\<Tab>" : coc#refresh())
-inoremap <silent><expr> <S-Tab>  coc#pum#visible() ? coc#pum#prev(1)  : "\<C-h>"
+  " Enter accepts the currently selected item
+  inoremap <silent><expr> <CR>     coc#pum#visible() ? coc#pum#confirm() : "\<CR>"
 
-" Enter accepts the currently selected item
-inoremap <silent><expr> <CR>     coc#pum#visible() ? coc#pum#confirm() : "\<CR>"
-
-function! CheckBackspace() abort
-  let col = col('.') - 1
-  return !col || getline('.')[col - 1] =~# '\s'
-endfunction
+  function! CheckBackspace() abort
+    let col = col('.') - 1
+    return !col || getline('.')[col - 1] =~# '\s'
+  endfunction
+endif
 
 
 " Set the filetypes to skip over adding to the history.
@@ -385,22 +433,28 @@ endif
 let g:netrw_list_hide = '\(^\|\s\s\)\zs\.\S\+' " Hide dot files by default. Toggle this with gh
 let g:netrw_banner=1 " Toggle the banner
 
-" CtrlP settings
+" CtrlP settings. Vim only -- under Neovim <c-p> opens fzf-lua's file picker
+" instead (nvim/lua/editor/finder.lua), which is the same key doing the same
+" job over ripgrep rather than CtrlP's own scanner.
 let g:ctrlp_map = '<c-p>'
 let g:ctrlp_cmd = 'CtrlP'
 let g:ctrlp_extensions = ['line', 'dir', 'tag']
 let g:ctrlp_custom_ignore = 'node_modules\|DS_Store\|git\|dist'
 
-" Jedi settings
-" let g:jedi#completions_enabled = 0 " Use deoplete for this instead
-" Jedi commands
-let g:jedi#goto_command = "<leader>g"
-let g:jedi#goto_assignments_command = ""
-let g:jedi#goto_definitions_command = ""
-let g:jedi#documentation_command = ""
-let g:jedi#usages_command = "<leader>u"
-let g:jedi#completions_command = ""
-let g:jedi#rename_command = "<leader>r"
+" Jedi settings. Vim only: in Neovim these three keys are bound to the LSP
+" client's definition/references/rename in nvim/lua/editor/lsp.lua, which works
+" for every language rather than just Python.
+if !has('nvim')
+  " let g:jedi#completions_enabled = 0 " Use deoplete for this instead
+  " Jedi commands
+  let g:jedi#goto_command = "<leader>g"
+  let g:jedi#goto_assignments_command = ""
+  let g:jedi#goto_definitions_command = ""
+  let g:jedi#documentation_command = ""
+  let g:jedi#usages_command = "<leader>u"
+  let g:jedi#completions_command = ""
+  let g:jedi#rename_command = "<leader>r"
+endif
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Plugin_option_toggling

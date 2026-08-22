@@ -70,3 +70,30 @@ silent! xunmap #
 silent! nunmap Y
 
 execute 'source ' . fnameescape($VIMCFG . '/vimrc')
+
+" ---------------------------------------------------------------------------
+" Bootstrap on a machine that has never run this config.
+"
+" vim-plug is committed to the repo, but the plugins it declares are not, so a
+" fresh clone reaches this line with an empty ~/.local/share/nvim/plugged and
+" the lua config below would fail on its first require(). Install first, then
+" continue. --sync so it finishes before VimEnter handlers start firing.
+if !empty(filter(values(g:plugs), '!isdirectory(v:val.dir)'))
+  augroup nvim_plugin_bootstrap
+    autocmd!
+    autocmd VimEnter * PlugInstall --sync | source $MYVIMRC
+  augroup END
+endif
+
+" ---------------------------------------------------------------------------
+" Neovim-only configuration: the built-in LSP client, Treesitter, fuzzy
+" finding, completion, and the external-tool check that offers to install what
+" any of those are missing. See nvim/lua/editor/.
+"
+" Guarded so that a broken plugin tree degrades to a plain-but-working editor
+" rather than an error on every launch.
+try
+  lua require('editor')
+catch
+  echomsg 'editor lua config failed to load: ' . v:exception
+endtry
