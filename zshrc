@@ -389,3 +389,21 @@ else |
   execute "source " . fnameescape($MYVIMRC) |
 endif
 '
+
+# ---------------------------------------------------------------------- secrets
+# Secrets live in ~/.env, which is deliberately not in this repo -- it is public.
+# env.example lists the names with placeholder values; setup_dotfiles.sh seeds
+# ~/.env from it on a new machine.
+#
+# `set -a` exports everything the file defines and handles quoting properly. The
+# older `exp` alias below does the same thing by hand and is also mis-quoted
+# (`alias exp'=...'` rather than `alias exp='...'`), so it never actually took.
+#
+# Note this still puts the values in the shell's environment, where other
+# processes of this user can read them. Anything that must not be readable that
+# way has to be fetched at point of use (1Password CLI, Keychain) instead.
+if [ -f "$HOME/.env" ]; then
+  set -a
+  source "$HOME/.env"
+  set +a
+fi

@@ -67,3 +67,16 @@ Thumbs.db
 .local.vimrc
 vimrc.local
 
+# =========================
+# Secrets
+# =========================
+# The real environment file lives at ~/.env and never belongs here -- this repo
+# is public. env.example is the committed template; setup_dotfiles.sh seeds
+# ~/.env from it on a new machine.
+.env
+.env.*
+env
+env.*
+*.env
+*.env.*
+!env.example

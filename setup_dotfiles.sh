@@ -148,6 +148,22 @@ step "MCP servers"
 register_mcp_server playwright \
   npx @playwright/mcp@latest --cdp-endpoint http://127.0.0.1:9222
 
+# ---------------------------------------------------------------------- secrets
+
+# Seeded, never linked: ~/.env holds real secrets and must not be a symlink into
+# a public repo. Only created if absent, so re-running never clobbers real values.
+step "Secrets"
+if [ -f "$HOME/.env" ]; then
+  info "already present: $HOME/.env"
+elif [ -f "$REPO/env.example" ]; then
+  cp "$REPO/env.example" "$HOME/.env"
+  chmod 600 "$HOME/.env"
+  info "created $HOME/.env from env.example -- fill in the real values"
+else
+  warn "env.example missing from the repo, skipping"
+  SKIPPED=$((SKIPPED + 1))
+fi
+
 # ---------------------------------------------------------------------- summary
 
 step "Done"
