@@ -421,7 +421,14 @@ nnoremap K :call investigate#Investigate('n')<CR>
 if executable('ag')
   " Create the 'Ag' command and a mapping to call it
   " Call it with ':Ag <pattern>'
-  set grepprg=ag\ --nogroup\ --nocolor
+  "
+  " --column matters: Neovim's default 'grepformat' is only %f:%l:%c:%m, so ag's
+  " plain file:line:text came back unparsed -- every entry valid:0 with lnum 0
+  " and bufnr 0. :cwindow only opens when entries are valid, so the window never
+  " appeared, and <CR> on a line had no file to jump to. 'grepformat' is set
+  " explicitly with a no-column fallback so this works the same under Vim.
+  set grepprg=ag\ --column\ --nogroup\ --nocolor
+  set grepformat=%f:%l:%c:%m,%f:%l:%m
   command! -nargs=+ -complete=file -bar Ag silent! grep! <args>|cwindow|redraw!
   nnoremap <leader>sr :Ag ''<left>
 endif
