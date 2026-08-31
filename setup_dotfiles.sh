@@ -141,12 +141,37 @@ register_mcp_server() {
     return 0
   fi
 
-  if claude mcp get "$name" >/dev/null 2>&1; then
-    if claude mcp get "$name" 2>/dev/null | grep -q -- "$1"; then
+  # Build the invocation this repo declares, so it can be compared against what
+  # is actually registered. "$@" is left untouched for the `claude mcp add`
+  # below, which must keep the original argument boundaries.
+  local want_cmd="$1" want_args="" arg skip_first=1
+  for arg in "$@"; do
+    if [ "$skip_first" -eq 1 ]; then skip_first=0; continue; fi
+    if [ -z "$want_args" ]; then want_args="$arg"; else want_args="$want_args $arg"; fi
+  done
+
+  local current="" have_cmd="" have_args=""
+  if current="$(claude mcp get "$name" 2>/dev/null)" && [ -n "$current" ]; then
+    # Compare the whole invocation, command AND arguments.
+    #
+    # This used to be `claude mcp get "$name" | grep -q -- "$1"`, which only
+    # looked for the command. Every server here runs through npx, so a server
+    # whose arguments had drifted still matched, was reported "already
+    # registered", and was left alone. That made the one repair AGENTS.md
+    # prescribes for a drifted server -- re-run this script -- silently do
+    # nothing, which is how the playwright server sat on --user-data-dir long
+    # after the config said --cdp-endpoint.
+    have_cmd="$(printf '%s\n' "$current" | sed -n 's/^[[:space:]]*Command:[[:space:]]*//p' | head -1)"
+    have_args="$(printf '%s\n' "$current" | sed -n 's/^[[:space:]]*Args:[[:space:]]*//p' | head -1)"
+
+    if [ "$have_cmd" = "$want_cmd" ] && [ "$have_args" = "$want_args" ]; then
       info "already registered: $name"
       return 0
     fi
+
     info "reconfiguring: $name"
+    info "    was: $have_cmd $have_args"
+    info "    now: $want_cmd $want_args"
     claude mcp remove "$name" -s user >/dev/null 2>&1 || true
   fi
 
