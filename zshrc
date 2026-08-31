@@ -134,6 +134,9 @@ alias pips='pipenv shell'
 # Aptible login set to a week
 alias aptiblelogin='aptible login --lifetime=7d'
 
+# AWS SSO login for the savvy session
+alias awsl='aws sso login --sso-session savvy'
+
 # Set the project dir and make it easy to get there
 export PROJECTDIR="/Users/cohen/spark"
 alias pd="cd $PROJECTDIR"
@@ -360,14 +363,20 @@ export OP_AUTH_ITEM_NAME_AWS="AWS"
 
 ### Included by formctl-setup
 ## formctl auth docker && poetry-token && npm-token
-source '/Users/cohen/.config/formation-bio/zsh/zshrc'
+# Left off: this hardcodes /Users/cohen, which is not the home directory on
+# every machine, and formctl is not installed everywhere either. Sourcing a
+# missing file aborts the rest of .zshrc, so guard rather than source blindly.
+formctl_zshrc="$HOME/.config/formation-bio/zsh/zshrc"
+[ -r "$formctl_zshrc" ] && source "$formctl_zshrc"
+unset formctl_zshrc
 # export DOTNET_ROOT=/opt/homebrew/opt/dotnet/libexec
 # export PATH=/opt/homebrew/bin:$PATH
 export DOTNET_ROOT="$HOME/.dotnet"
 export PATH="$DOTNET_ROOT:$PATH"
 # export MSBuildSDKsPath="$HOME/.dotnet/sdk/6.0.428/Sdks"
 
-. "$HOME/.local/share/../bin/env"
+# Written by the uv/rustup installers; absent on a machine that has run neither.
+[ -r "$HOME/.local/bin/env" ] && . "$HOME/.local/bin/env"
 # export VIMINIT='source ~/vim/vimrc'
 
 # where your config lives
@@ -389,6 +398,33 @@ else |
   execute "source " . fnameescape($MYVIMRC) |
 endif
 '
+export PATH="$HOME/.local/bin:$PATH"
+
+# ------------------------------------------------------------- language runtimes
+# Both are guarded: a fresh machine may have neither, and an unguarded
+# `eval "$(rbenv init - zsh)"` fails the whole file when rbenv is missing.
+export NVM_DIR="$HOME/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+
+command -v rbenv >/dev/null 2>&1 && eval "$(rbenv init - zsh)"
+
+# ------------------------------------------------------------------------- tools
+
+alias claude='claude --dangerously-skip-permissions'
+
+# Backing file for the thread-tracker CLI.
+export THREADS_FILE="$HOME/Documents/General notes/Threads/threads.md"
+
+# Codex needs a GitHub token in the environment, but it must not be written to
+# disk: read it from gh at call time and scope it to the one command.
+codex-github() {
+  local github_token
+  github_token="$(gh auth token)" || return
+  GITHUB_PAT_TOKEN="$github_token" command codex "$@" --dangerously-bypass-approvals-and-sandbox
+}
+
+# Worktree helpers, kept out of this repo.
+[[ -r ~/.config/zsh/wt.zsh ]] && source ~/.config/zsh/wt.zsh
 
 # ---------------------------------------------------------------------- secrets
 # Secrets live in ~/.env, which is deliberately not in this repo -- it is public.

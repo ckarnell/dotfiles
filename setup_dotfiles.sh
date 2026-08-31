@@ -73,8 +73,23 @@ link nvim      "$HOME/.config/nvim"
 # directory also holds session state (projects/, history, local settings) that
 # must not be replaced by a symlink into this repo.
 step "Claude Code"
-link claude/CLAUDE.md            "$HOME/.claude/CLAUDE.md"
-link claude/settings.json        "$HOME/.claude/settings.json"
+# CLAUDE.md and settings.json are deliberately NOT linked.
+#
+# This repo is public, and the live versions of both files hold things that
+# cannot go in it: CLAUDE.md carries work-specific instructions (internal repo
+# and host names, local seed credentials), and settings.json points at machine-
+# local hooks. Linking them would also mean this repo silently replacing config
+# that is edited directly and often.
+#
+# The content this repo does own -- the shared-browser rules below, and the
+# preferences in claude/settings.json -- is merged into the live files by hand.
+# Treat claude/CLAUDE.md and claude/settings.json as the reference copy of that
+# shared part, not as the whole file.
+#
+#   link claude/CLAUDE.md     "$HOME/.claude/CLAUDE.md"
+#   link claude/settings.json "$HOME/.claude/settings.json"
+#
+# The launcher script is machine-independent and safe to link.
 link claude/bin/shared-chrome.sh "$HOME/.claude/bin/shared-chrome.sh"
 
 # --------------------------------------------------------------- launch agents
