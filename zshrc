@@ -410,7 +410,32 @@ command -v rbenv >/dev/null 2>&1 && eval "$(rbenv init - zsh)"
 
 # ------------------------------------------------------------------------- tools
 
-alias claude='claude --dangerously-skip-permissions'
+# >>> claude-default-flags >>>
+# Interactive `claude` sessions always start with Remote Control on and
+# permission prompts skipped. Subcommands (mcp, update, ...) and -p/--print runs
+# pass through untouched. If another wrapper already defined a `claude` function
+# (e.g. claude-auto-retry), this wraps it; otherwise it calls the binary.
+# --remote-control goes first so it can't swallow a prompt as its session name.
+unalias claude 2>/dev/null || true
+if ! (( $+functions[_claude_base] )); then
+  if (( $+functions[claude] )); then
+    functions -c claude _claude_base
+  else
+    _claude_base() { command claude "$@"; }
+  fi
+fi
+claude() {
+  case "$1" in
+    mcp|plugin|plugins|update|upgrade|doctor|config|install|setup-token|migrate-installer|auth|agents|-v|--version|-h|--help)
+      _claude_base "$@"; return $? ;;
+  esac
+  local a
+  for a in "$@"; do
+    [[ "$a" == "-p" || "$a" == "--print" ]] && { _claude_base "$@"; return $?; }
+  done
+  _claude_base --remote-control --dangerously-skip-permissions "$@"
+}
+# <<< claude-default-flags <<<
 
 # Backing file for the thread-tracker CLI.
 export THREADS_FILE="$HOME/Documents/General notes/Threads/threads.md"
